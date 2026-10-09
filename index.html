@@ -1,15 +1,134 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="hr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Kako računala igraju šah?</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#171b20">
+  <meta name="description" content="Predložak seminarskog rada Kako računala igraju šah? — Matija Njegač.">
+  <title>Kako računala igraju šah? | Seminar</title>
+  <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
-    <h1>Kako računala igraju šah?</h1>
-    <p>Seminar — Matija Njegač</p>
+  <a class="skip-link" href="#sadrzaj">Preskoči na sadržaj</a>
+  <header>
+    <nav aria-label="Glavna navigacija">
+      <a href="#sadrzaj">Rad</a>
+      <a href="#prezentacija">Prezentacija</a>
+      <a href="#kod">Kod</a>
+      <a href="#zadaci">Zadaci</a>
+      <a href="#izvori">Izvori</a>
+      <a href="#ai">Uporaba AI-ja</a>
+    </nav>
+  </header>
+  <main id="sadrzaj">
+    <article>
+      <h1>Kako računala igraju šah?</h1>
+      <p class="byline">Matija Njegač · Seminar (Računarstvo i Matematika)<br>PMF Zagreb · Datum izlaganja: dopuniti</p>
+      <p><a href="#prezentacija">Prezentacija</a> · <a href="#kod">Izvorni kod</a> · <a href="#zadaci">Zadaci</a> · <a href="#izvori">Izvori</a></p>
+      <p class="draft"><em>Predložak u izradi. Naslovi su prijedlog strukture; tekst u uglatim zagradama zamijeni vlastitim sadržajem prije objave.</em></p>
+      <!-- Ovdje dodaj vlastiti kratak sažetak rada. -->
+      <p class="placeholder">[Ovdje napiši vlastiti sažetak seminara.]</p>
+      <details class="contents">
+        <summary>Sadržaj rada</summary>
+        <ol>
+          <li><a href="#uvod">Uvod i motivacija</a></li>
+          <li><a href="#stablo">Stablo igre</a></li>
+          <li><a href="#minimax">Minimax i alfa-beta podrezivanje</a></li>
+          <li><a href="#evaluacija">Evaluacija pozicije i njezina ograničenja</a></li>
+          <li><a href="#nnue">Stockfish i NNUE</a></li>
+          <li><a href="#mcts">AlphaZero i MCTS</a></li>
+          <li><a href="#baze">Knjige otvaranja i baze završnica</a></li>
+          <li><a href="#zakljucak">Zaključak</a></li>
+        </ol>
+      </details>
 
-    <h2>Materijali</h2>
-    <p><a href="seminar.pdf">Otvori prezentaciju</a></p>
+      <section id="uvod">
+        <h2>Uvod i motivacija</h2>
+        <p class="placeholder">[Ovdje napiši uvod, cilj rada i motivacijski primjer.]</p>
+      </section>
+
+      <section id="stablo">
+        <h2>Stablo igre</h2>
+        <p class="placeholder">[Ovdje uvedi pojmove pozicije, poteza, dubine i grananja. Dodaj vlastiti dijagram i matematički opis.]</p>
+      </section>
+
+      <section id="minimax">
+        <h2>Minimax i alfa-beta podrezivanje</h2>
+        <p class="placeholder">[Ovdje objasni algoritme, prikaži vlastiti primjer i argument ispravnosti.]</p>
+      </section>
+
+      <section id="evaluacija">
+        <h2>Evaluacija pozicije i njezina ograničenja</h2>
+        <p class="placeholder">[Ovdje razradi evaluaciju te provjeren primjer tvrđave ili ograničenog horizonta pretrage.]</p>
+      </section>
+
+      <section id="nnue">
+        <h2>Stockfish i NNUE</h2>
+        <p class="placeholder">[Ovdje razradi ulogu NNUE-a koristeći provjerenu dokumentaciju i navedi verziju enginea.]</p>
+      </section>
+
+      <section id="mcts">
+        <h2>AlphaZero i MCTS</h2>
+        <p class="placeholder">[Ovdje razradi učenje i pretraživanje prema primarnim izvorima. Razdvoji ulogu mreže od algoritma pretrage.]</p>
+      </section>
+
+      <section id="baze">
+        <h2>Knjige otvaranja i baze završnica</h2>
+        <p class="placeholder">[Ovdje razradi njihovu svrhu, primjere i ograničenja.]</p>
+      </section>
+
+      <section id="zakljucak">
+        <h2>Zaključak</h2>
+        <p class="placeholder">[Ovdje napiši vlastite zaključke i pitanja za diskusiju.]</p>
+      </section>
+
+      <section id="prezentacija">
+        <h2>Prezentacija</h2>
+        <p class="placeholder">[PDF prezentacija još nije dodana.]</p>
+        <!-- Kopiraj svoj PDF u materijali/seminar.pdf. Zatim zamijeni prethodni odlomak s:
+        <p><a href="materijali/seminar.pdf">Preuzmi prezentaciju (PDF)</a></p>
+        -->
+      </section>
+      <section id="kod">
+        <h2>Programski dio</h2>
+        <p class="placeholder">[Ovdje opiši vlastitu implementaciju i dodaj poveznicu na kod u svojem GitHub repozitoriju.]</p>
+        <h3>Pokretanje</h3>
+        <p class="placeholder">[Navedi jezik i verziju, ovisnosti, naredbu za pokretanje te primjer ulaza i očekivanog izlaza.]</p>
+        <!-- Primjer HTML oznaka za prikaz vlastitog koda:
+        <pre><code>Ovdje unesi vlastiti kod.</code></pre>
+        Kodiraj znak manje od kao &lt; i ampersand kao &amp; unutar HTML-a.
+        -->
+      </section>
+      <section id="zadaci">
+        <h2>Zadaci za slušatelje</h2>
+        <p class="placeholder">[Zadaci još nisu objavljeni. Zadrži jedan do tri zadatka i ukloni neiskorištene stavke.]</p>
+        <ol>
+          <li>[Ovdje unesi prvi zadatak.]</li>
+          <li>[Ovdje unesi drugi zadatak — neobavezno.]</li>
+          <li>[Ovdje unesi treći zadatak — neobavezno.]</li>
+        </ol>
+        <p class="placeholder">[Ovdje dodaj način i rok predaje. Zadaci se rješavaju isti dan, idealno tijekom izlaganja.]</p>
+      </section>
+      <section id="izvori">
+        <h2>Izvori</h2>
+        <!-- Primjer reference iz teksta: <a href="#izvor-1">[1]</a> -->
+        <ol>
+          <li id="izvor-1">[Autor(i), naslov izvornog rada, publikacija, godina, DOI ili poveznica.]</li>
+          <li id="izvor-2">[Naziv službene dokumentacije, verzija, poveznica i datum pristupa.]</li>
+          <li id="izvor-3">[Autor(i), naslov knjige, izdavač, godina i relevantne stranice.]</li>
+        </ol>
+      </section>
+      <section id="dodatak">
+        <h2>Dodatak</h2>
+        <p class="placeholder">[Ovdje dodaj vlastite dijagrame, PGN datoteke, rezultate pokusa ili dodatne materijale. Ukloni odjeljak ako ga ne koristiš.]</p>
+      </section>
+      <section id="ai">
+        <h2>Uporaba umjetne inteligencije</h2>
+        <p>Za izradu ovog predloška korišten je ChatGPT (OpenAI): za prijedlog strukture stranice i poglavlja, oblikovanje web-stranice te HTML i CSS. Generirane su i uredničke upute u poljima za popunjavanje. Predložak ne sadrži dovršen tekstni ili matematički dio seminarskog rada ni implementaciju algoritama koji su predmet rada.</p>
+        <p class="placeholder">[Prije predaje dopuni izjavu svim stvarno korištenim alatima i načinima njihove uporabe. Provjeri primarne izvore za tvrdnje u radu.]</p>
+      </section>
+    </article>
+  </main>
+  <footer>Matija Njegač · Kako računala igraju šah? · <a href="#sadrzaj">Na vrh</a></footer>
 </body>
 </html>
