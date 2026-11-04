@@ -57,12 +57,9 @@ def minimax(pozicija: Stablo, dubina: int, bojaIgraca: bool):
             if vrijednost < najbolja_evaluacija:
                 najbolja_evaluacija = vrijednost
                 najbolje_dijete = dijete
-        
-        
 
 
     pozicija.evaluacija = najbolja_evaluacija   
-
     return najbolja_evaluacija, najbolje_dijete
 
 
@@ -165,7 +162,7 @@ def hijerarhijski_raspored(graf, root_id=0, width=1.0, vert_gap=0.2, xcenter=0.5
     return pos
 
 
-def nacrtaj_stablo(korijen: Stablo):
+def nacrtaj_stablo(korijen: Stablo, naziv_datoteke: Optional[str] = "stablo.png"):
     graf = nx.DiGraph()
     izgradi_graf(korijen, graf)
 
@@ -192,15 +189,17 @@ def nacrtaj_stablo(korijen: Stablo):
                  color=graf.nodes[node]['text_color'], 
                  weight='bold')
 
-    plt.title("Prikaz stabla poteza", fontsize=14)
+    plt.title("Prikaz stabla igre", fontsize=14)
     plt.axis("off")
     plt.tight_layout()
+
+    # --- SPREMANJE U PNG ---
+    if naziv_datoteke:
+        plt.savefig(naziv_datoteke, dpi=300, bbox_inches="tight")
+        print(f"Slika je spremljena kao '{naziv_datoteke}'")
+
     plt.show()
-
-
-    import copy
-import time
-
+    plt.close()  # Oslobađa memoriju nakon prikaza
 
 def testTimer(
     algoritam, stablo: Stablo, dubina: int, bojaIgraca: bool, *args, **kwargs

@@ -1,5 +1,7 @@
 \documentclass[aspectratio=43]{beamer}
 
+\usepackage{listings}
+\usepackage{xcolor} % preporučeno za boje koda
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
 \usepackage[croatian]{babel}
@@ -24,10 +26,26 @@
 	
 	\begin{frame}{Antagonističke igre}
 		\begin{itemize}
-		\item Antagonističke igre su one koje se sastoje od dva ili više igrača imaju suprotne ciljeve. Pobjeda jednog igrača znači identičan i absolutni gubitak za ostale igrače.
+		\item Antagonističke igre su one koje se sastoje od dva ili više igrača koji imaju suprotne ciljeve. Pobjeda jednog igrača znači identičan i absolutni gubitak za ostale igrače.
 		\item Primjeri: šah, križić kružić, go, shogi
 		\end{itemize}
 	\end{frame}
+	
+	\begin{frame}{Stablo igre}
+	Determinističku igru dvaju igrača s potpunom informacijom prikazujemo usmjerenim stablom $T = (V, E)$:
+	\begin{itemize}
+		\item \textbf{Korijen $v_0 \in V$:} Početno stanje igre $s_0$.
+		\item \textbf{Čvorovi $V$:} Pozicije. Svakom neterminalnom čvoru pridružen je igrač na potezu $P(v) \in \{\text{MAX}, \text{MIN}\}$.
+		\item \textbf{Usmjereni bridovi $E$:} Legalni potezi
+		\item \textbf{Listovi (terminalni čvorovi) $V_T \subset V$:} Završne pozicije (mat, pat, remi) gdje je definirana funkcija isplate:
+		\[
+		f \colon V_T \to \mathbb{R} \quad (\text{npr. Shannon ju definira kao:} \{1, 0,-1\})\footnote{C.~E.~Shannon, \emph{Programming a Computer for Playing Chess}, Philosophical Magazine, 1950.}
+		\]
+	\end{itemize}
+	\vspace{0.2cm}
+	Svaki put od korijena do lista predstavlja jednu cjelovitu partiju.
+\end{frame}
+	
 	
 	\begin{frame}{Što je šahovska pozicija?}
 		
@@ -59,74 +77,232 @@
 			\end{itemize}
 			
 		\end{columns}
-		Najčešći prikaz za zapis pozicije koji se koristi je FEN zapis
+		Najčešći prikaz za zapis pozicije koji se koristi je Forsyth-Edwards Notacija (FEN) zapis
 		
 	\end{frame}
+
+\begin{frame}{Primjer FEN zapisa}
+	Primjer FEN zapisa:
+	\texttt{\small 2r1k2r/1pQ1nppp/p1b1p1q1/8/4P3/2N1B1P1/PPPR1P1P/2KR4 b k - 0 15}
 	
-	\begin{frame}{Primjer šahovske pozicije}
-		Primjer FEN zapisa:
-		\texttt{\small 2r1k2r/1pQ1nppp/p1b1p1q1/8/4P3/2N1B1P1/PPPR1P1P/2KR4 b k - 0 15}
+	\vspace{0.2cm}
+	\centering
+	\includegraphics[height=0.48\textheight, keepaspectratio]{NjegTuksi.png}
+	
+	\pause
+	\vspace{0.2cm}
+	{\footnotesize Njegač -- Tuković, Split 2021.}
+\end{frame}
+
+\begin{frame}{Pojednostavljeno stablo igre}
+	\centering
+	
+	\begin{tikzpicture}[
+		grow=down,
+		level distance=17mm,
+		level 1/.style={sibling distance=4cm},
+		level 2/.style={sibling distance=2cm},
+		position/.style={
+			draw,
+			rounded corners,
+			align=center,
+			font=\scriptsize,
+			text width=2.7cm,
+			inner sep=4pt
+		},
+		edge from parent/.style={draw, -{Stealth}}
+		]
 		
-		\vspace{0.3cm}
-		\centering
-		\includegraphics[height=0.55\textheight, keepaspectratio]{NjegTuksi.png}
+		\node[position] (root) {Početna pozicija $P_0$\\
+			\includegraphics[width=1.1cm]{NjegTuksi.png}\\
+			Crni na potezu}
+		child {
+			node[position] {$P_1$\\nakon $1\ldots\text{Rxc7}$}
+			child {
+				node[position] {$P_2$\\nakon $2.\ \text{Rd8}\#$}
+			}
+		}
+		child {
+			node[position] {$P_1$\\nakon $1\ldots 0\text{-}0$}
+			child {
+				node[position] {$P_2$\\nakon $2.\ \text{Qxe7}$}
+			}
+		}
+		child {
+			node[position] {$P_1$\\nakon $1\ldots\text{f6?}$}
+			child {
+				node[position] {$P_2$\\nakon $2.\ \text{Rd8}+$}
+			}
+		};
+			
+		
+	\end{tikzpicture}
+	
+	\vspace{0.2cm}
+	{\scriptsize Nisu prikazani svi legalni potezi.}
+\end{frame}
+
+\begin{frame}{Problem?}
+	\renewcommand{\thefootnote}{$\textcolor{red}{*}$}
+	
+	\begin{itemize}
+		\item \textbf{Koliko postoji pozicija?}
+		\pause
+		\begin{itemize}
+			\item $4.822 \times 10^{44}$\footnote{J.~Tromp, \emph{Counting Chess Positions}, ICGA Journal 44(2), 2022.}
+		\end{itemize}
+		
 		\pause
 		\vspace{0.3cm}
-		\\
-		Njegač - Tuković Split 2021
-	\end{frame}
-	\begin{frame}{Pojednostavljeno stablo igre}
-		\centering
-		
-		\begin{tikzpicture}[
-			grow=down,
-			level distance=17mm,
-			level 1/.style={sibling distance=4cm},
-			level 2/.style={sibling distance=2cm},
-			position/.style={
-				draw,
-				rounded corners,
-				align=center,
-				font=\scriptsize,
-				text width=2.7cm,
-				inner sep=4pt
-			},
-			edge from parent/.style={draw, -{Stealth}}
-			]
-			\node[position] {Početna pozicija $P_0$\\
-				\includegraphics[width=1.1cm]{Pozicija1.png}\\
-				Bijeli na potezu}
-			child {
-				node[position] {$P_1$\\nakon $1.\ g5$}
-				child {
-					node[position] {$P_2$\\nakon $1\ldots e4$}
-				}
-			}
-			child {
-				node[position] {$P_1$\\nakon $1.\ Rh8+$}
-				child {
-					node[position] {$P_2$\\nakon $1\ldots Bg8$}
-				}
-			}
-			child {
-				node[position] {$P_1$\\nakon $1.\ Ra8?$}
-				child {
-					node[position] {$P_2$\\nakon $1\ldots Qxa8$}
-				}
-			};
-		\end{tikzpicture}
-		
-		\vspace{0.2cm}
-		{\scriptsize Prikazani su samo odabrani potezi, ne sve legalne grane.}
-	\end{frame}
+		\item \textbf{Koliko čvorova u stablu?}
+		\pause
+		\begin{itemize}
+			\item Prosječni broj legalnih poteza: $b \approx 30$
+			\pause
+			\item Prosječni broj (polu)poteza u jednoj partiji: $d \approx 80$
+			\pause
+			\item $b^d = 30^{80} \approx \textcolor{red}{10^{120}}$ (Shannonov broj)
+		\end{itemize}
+	\end{itemize}
 	
+	\pause
+	\vspace{0.4cm}
+	\centering
+	\Large\textbf{\textcolor{red}{PREVIŠE!}}
+\end{frame}
+
+\begin{frame}{Rješenje?}
+\textbf{funkcija statičke evaluacije}\\
+$Eval\colon V \to \mathbb{R}$\\
+Svakom čvoru dodjeljujemo realni broj gdje pozitivan broj označava prednost bijelog, a negativan prednost crnog\\
+Definiranje takve funkcije je umjetnost:\\
+Shannon 1950:
+	\begin{multline*}
+Eval(P) = 200(K - K') + 9(Q - Q') + 5(R - R') + 3(B - B' + N - N') + (P - P') \\
+- 0.5(D - D' + S - S' + I - I') + 0.1(M - M')
+\end{multline*}
+Desetljećima su inžinjeri ručno definirali evaluacijske funkcije:
+Deep Blue 1997: 8000 ručno kodiranih parametara
+\end{frame}
+
+\begin{frame}{Rješenje?}
+	\textbf{Funkcija statičke evaluacije:}
+	\[
+	Eval \colon V \to \mathbb{R}
+	\]
+	Svakom čvoru dodjeljujemo realni broj gdje pozitivan broj označava prednost bijelog, a negativan prednost crnog.
 	
+	\vspace{0.25cm}
+	Definiranje takve funkcije je umjetnost:
 	
-	\begin{frame}{Minimax}
-		Procjena pozicije kada je na potezu MAX:
-		\[
-		V(s) = \max_{s' \in \mathrm{Djeca}(s)} V(s')
-		\]
-	\end{frame}
+	\begin{block}{Shannon (1950)}
+		\footnotesize
+		\begin{multline*}
+		Eval(P) = 200(K - K') + 9(Q - Q') + 5(R - R') + 3(B - B' + N - N') + (P - P') \\
+		- 0.5(D - D' + S - S' + I - I') + 0.1(M - M')
+		\end{multline*}
+	\end{block}
+	
+	\vspace{0.2cm}
+	Desetljećima su inženjeri ručno definirali evaluacijske funkcije:
+	\begin{itemize}
+		\item \textbf{Deep Blue (1997):} 8000 ručno kodiranih parametara
+	\end{itemize}
+\end{frame}
+	
+\begin{frame}{Minimax algoritam}
+	\begin{itemize}
+		\item Za minimax radi na način da uzmemo dubinu $d$ traženja.
+		\item sve čvorove na dubini $d$ evaluiramo funkcijom statičke evaluacije
+		\item ovisno o igraču pronađemo minimum ili maximum sve djece čvora i njemu pridružujemo tu vrijednost
+	\end{itemize}
+\end{frame}
+
+\begin{frame}
+	\includegraphics[height=1\textheight, keepaspectratio]{Primjer1_zad.png}
+\end{frame}
+\begin{frame}
+	\includegraphics[height=1\textheight, keepaspectratio]{Primjer1.png}
+\end{frame}
+
+\begin{frame}
+	\includegraphics[height=1\textheight, keepaspectratio]{zadatak1_bezrj.png}
+\end{frame}
+
+
+\begin{frame}[fragile]{Minimax algoritam}
+	\begin{lstlisting}[
+    	language=Python,
+    	basicstyle=\ttfamily\scriptsize,
+    	lineskip=-1pt,
+    	numbers=left,
+    	numberstyle=\tiny\color{gray},
+    	xleftmargin=1.5em
+]
+BIJELA = 1
+CRNA = 0
+
+class Stablo:
+    def __init__(self, boja: bool, evaluacija: Optional[float] = None):
+        self.boja = boja
+        self.evaluacija = evaluacija
+        self.djeca: list['Stablo'] = []
+
+    def dodaj_dijete(self, dijete: 'Stablo'):
+        self.djeca.append(dijete)
+
+    def daj_boju(self):
+        return self.boja
+    
+    def daj_evaluaciju(self):
+        return self.evaluacija
+
+    def postavi_evaluaciju(self, eval):
+        self.evaluacija = eval
+    def je_list(self):
+        return len(self.djeca) == 0
+
+def staticka_evaluacija(pozicija: Stablo):
+    #U svrhu primjera uzimamo samo random vrijednost
+    return random.uniform(-10, 10)
+	\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Minimax algoritam}
+	\begin{lstlisting}[
+    	language=Python,
+    	basicstyle=\ttfamily\scriptsize,
+    	lineskip=-1pt,
+    	numbers=left,
+    	numberstyle=\tiny\color{gray},
+    	xleftmargin=1.5em
+]
+def minimax(pozicija: Stablo, dubina: int, bojaIgraca: bool):
+    najbolje_dijete = None
+    if dubina == 0 or pozicija.je_list():
+        if pozicija.evaluacija is None:
+            pozicija.evaluacija = staticka_evaluacija(pozicija)
+        return pozicija.evaluacija, None
+
+    if bojaIgraca == BIJELA:
+        najbolja_evaluacija = float('-inf')
+        for dijete in pozicija.djeca:
+            vrijednost, _ = minimax(dijete, dubina - 1, CRNA)
+            if vrijednost > najbolja_evaluacija:
+                najbolja_evaluacija = vrijednost
+                najbolje_dijete = dijete
+    else:
+        najbolja_evaluacija = float('inf')
+        for dijete in pozicija.djeca:
+            vrijednost, _ = minimax(dijete, dubina - 1, BIJELA)
+            if vrijednost < najbolja_evaluacija:
+                najbolja_evaluacija = vrijednost
+                najbolje_dijete = dijete
+
+    pozicija.evaluacija = najbolja_evaluacija   
+    return najbolja_evaluacija, najbolje_dijete
+    \includegraphics[width=\linewidth]{Primjer1_zad.png}
+	\end{lstlisting}
+\end{frame}
 	
 \end{document}

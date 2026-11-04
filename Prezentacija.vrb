@@ -1,0 +1,35 @@
+\frametitle{Minimax algoritam}
+\begin{lstlisting}[
+    	language=Python,
+    	basicstyle=\ttfamily\scriptsize,
+    	lineskip=-1pt,
+    	numbers=left,
+    	numberstyle=\tiny\color{gray},
+    	xleftmargin=1.5em
+]
+def minimax(pozicija: Stablo, dubina: int, bojaIgraca: bool):
+    najbolje_dijete = None
+    if dubina == 0 or pozicija.je_list():
+        if pozicija.evaluacija is None:
+            pozicija.evaluacija = staticka_evaluacija(pozicija)
+        return pozicija.evaluacija, None
+
+    if bojaIgraca == BIJELA:
+        najbolja_evaluacija = float('-inf')
+        for dijete in pozicija.djeca:
+            vrijednost, _ = minimax(dijete, dubina - 1, CRNA)
+            if vrijednost > najbolja_evaluacija:
+                najbolja_evaluacija = vrijednost
+                najbolje_dijete = dijete
+    else:
+        najbolja_evaluacija = float('inf')
+        for dijete in pozicija.djeca:
+            vrijednost, _ = minimax(dijete, dubina - 1, BIJELA)
+            if vrijednost < najbolja_evaluacija:
+                najbolja_evaluacija = vrijednost
+                najbolje_dijete = dijete
+
+    pozicija.evaluacija = najbolja_evaluacija
+    return najbolja_evaluacija, najbolje_dijete
+    \includegraphics[width=\linewidth]{Primjer1_zad.png}
+	\end{lstlisting}
