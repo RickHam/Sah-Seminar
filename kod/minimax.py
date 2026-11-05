@@ -244,8 +244,8 @@ if __name__ == "__main__":
 
 
     korijen1 = Stablo(boja=BIJELA)
-    dubina = 2
-    generiraj_random_stablo(korijen1, dubina = dubina, min_djece = 2, max_djece = 3)
+    dubina = 3
+    generiraj_random_stablo(korijen1, dubina = dubina, min_djece = 2, max_djece = 2)
 
     optimalna_vrijednost, odabrani_potez = minimax(korijen1, dubina = dubina, bojaIgraca = BIJELA)
 
@@ -272,6 +272,46 @@ if __name__ == "__main__":
     
     nacrtaj_stablo(korijen)
 
+
+    # Izrada korijena i razine 1
+    korijen = Stablo(boja=BIJELA)  # MAX
+
+    min_lijevi = Stablo(boja=CRNA)  # MIN
+    min_desni = Stablo(boja=CRNA)   # MIN
+    korijen.dodaj_dijete(min_lijevi)
+    korijen.dodaj_dijete(min_desni)
+
+    # Razina 2 - djeca lijevog MIN čvora
+    max_A = Stablo(boja=BIJELA)
+    max_B = Stablo(boja=BIJELA)
+    min_lijevi.dodaj_dijete(max_A)
+    min_lijevi.dodaj_dijete(max_B)
+
+    # Razina 2 - djeca desnog MIN čvora
+    max_C = Stablo(boja=BIJELA)
+    max_D = Stablo(boja=BIJELA)
+    min_desni.dodaj_dijete(max_C)
+    min_desni.dodaj_dijete(max_D)
+
+    # Listovi za max_A (oba se gledaju)
+    max_A.dodaj_dijete(Stablo(boja=CRNA, evaluacija=3))
+    max_A.dodaj_dijete(Stablo(boja=CRNA, evaluacija=5))
+
+    # Listovi za max_B (list 9 se podrezuje!)
+    max_B.dodaj_dijete(Stablo(boja=CRNA, evaluacija=6))
+    max_B.dodaj_dijete(Stablo(boja=CRNA, evaluacija=9))
+
+    # Listovi za max_C (oba se gledaju)
+    max_C.dodaj_dijete(Stablo(boja=CRNA, evaluacija=1))
+    max_C.dodaj_dijete(Stablo(boja=CRNA, evaluacija=2))
+
+    # Listovi za max_D (Cijeli max_D i listovi 0 i -2 se podrezuju!)
+    max_D.dodaj_dijete(Stablo(boja=CRNA, evaluacija=0))
+    max_D.dodaj_dijete(Stablo(boja=CRNA, evaluacija=-2))
+
+    # Pokretanje i spremanje u sliku
+    opt_val, _ = alfa_beta_podrezivanje(korijen, dubina=3, bojaIgraca=BIJELA)
+    nacrtaj_stablo(korijen, naziv_datoteke="alpha_beta_primjer.png")
 
     # Usporedba performansi
     dubina_testa = 10

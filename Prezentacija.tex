@@ -6,6 +6,7 @@
 \usepackage[utf8]{inputenc}
 \usepackage[croatian]{babel}
 \usepackage{tikz}
+\usepackage{amsthm}
 
 
 \usetikzlibrary{arrows.meta,trees}
@@ -34,15 +35,20 @@
 	\begin{frame}{Stablo igre}
 	Determinističku igru dvaju igrača s potpunom informacijom prikazujemo usmjerenim stablom $T = (V, E)$:
 	\begin{itemize}
+		\pause
 		\item \textbf{Korijen $v_0 \in V$:} Početno stanje igre $s_0$.
+		\pause	
 		\item \textbf{Čvorovi $V$:} Pozicije. Svakom neterminalnom čvoru pridružen je igrač na potezu $P(v) \in \{\text{MAX}, \text{MIN}\}$.
+		\pause		
 		\item \textbf{Usmjereni bridovi $E$:} Legalni potezi
+		\pause		
 		\item \textbf{Listovi (terminalni čvorovi) $V_T \subset V$:} Završne pozicije (mat, pat, remi) gdje je definirana funkcija isplate:
 		\[
 		f \colon V_T \to \mathbb{R} \quad (\text{npr. Shannon ju definira kao:} \{1, 0,-1\})\footnote{C.~E.~Shannon, \emph{Programming a Computer for Playing Chess}, Philosophical Magazine, 1950.}
 		\]
 	\end{itemize}
 	\vspace{0.2cm}
+	\pause
 	Svaki put od korijena do lista predstavlja jednu cjelovitu partiju.
 \end{frame}
 	
@@ -172,26 +178,13 @@
 \end{frame}
 
 \begin{frame}{Rješenje?}
-\textbf{funkcija statičke evaluacije}\\
-$Eval\colon V \to \mathbb{R}$\\
-Svakom čvoru dodjeljujemo realni broj gdje pozitivan broj označava prednost bijelog, a negativan prednost crnog\\
-Definiranje takve funkcije je umjetnost:\\
-Shannon 1950:
-	\begin{multline*}
-Eval(P) = 200(K - K') + 9(Q - Q') + 5(R - R') + 3(B - B' + N - N') + (P - P') \\
-- 0.5(D - D' + S - S' + I - I') + 0.1(M - M')
-\end{multline*}
-Desetljećima su inžinjeri ručno definirali evaluacijske funkcije:
-Deep Blue 1997: 8000 ručno kodiranih parametara
-\end{frame}
-
-\begin{frame}{Rješenje?}
+\pause
 	\textbf{Funkcija statičke evaluacije:}
 	\[
 	Eval \colon V \to \mathbb{R}
 	\]
-	Svakom čvoru dodjeljujemo realni broj gdje pozitivan broj označava prednost bijelog, a negativan prednost crnog.
-	
+	Svakom čvoru dodjeljujemo realni broj gdje pozitivan broj označava prednost bijelog, a negativan prednost crnog.\\
+	\pause
 	\vspace{0.25cm}
 	Definiranje takve funkcije je umjetnost:
 	
@@ -202,7 +195,7 @@ Deep Blue 1997: 8000 ručno kodiranih parametara
 		- 0.5(D - D' + S - S' + I - I') + 0.1(M - M')
 		\end{multline*}
 	\end{block}
-	
+	\pause
 	\vspace{0.2cm}
 	Desetljećima su inženjeri ručno definirali evaluacijske funkcije:
 	\begin{itemize}
@@ -225,8 +218,8 @@ Deep Blue 1997: 8000 ručno kodiranih parametara
 	\includegraphics[height=1\textheight, keepaspectratio]{Primjer1.png}
 \end{frame}
 
-\begin{frame}
-	\includegraphics[height=1\textheight, keepaspectratio]{zadatak1_bezrj.png}
+\begin{frame}{Zadatak}
+	\includegraphics[height=0.9\textheight, keepaspectratio]{zadatak1_bezrj.png}
 \end{frame}
 
 
@@ -243,7 +236,8 @@ BIJELA = 1
 CRNA = 0
 
 class Stablo:
-    def __init__(self, boja: bool, evaluacija: Optional[float] = None):
+    def __init__(self, boja: bool, 
+    		 evaluacija: Optional[float] = None):
         self.boja = boja
         self.evaluacija = evaluacija
         self.djeca: list['Stablo'] = []
@@ -263,7 +257,6 @@ class Stablo:
         return len(self.djeca) == 0
 
 def staticka_evaluacija(pozicija: Stablo):
-    #U svrhu primjera uzimamo samo random vrijednost
     return random.uniform(-10, 10)
 	\end{lstlisting}
 \end{frame}
@@ -301,8 +294,319 @@ def minimax(pozicija: Stablo, dubina: int, bojaIgraca: bool):
 
     pozicija.evaluacija = najbolja_evaluacija   
     return najbolja_evaluacija, najbolje_dijete
-    \includegraphics[width=\linewidth]{Primjer1_zad.png}
 	\end{lstlisting}
 \end{frame}
+
+\begin{frame}{Može li bolje?}
+Minimax izračunava sve čvorove. Mora li ih sve?\\
+
+\textbf{$\alpha$-$\beta$ podrezivanje}:\\
+\begin{itemize}
+	\item\textbf{$\alpha$}:
+	Največi ishod koji igrač MAX (bijeli) ima osiguran. (init = $-\infty$)
+	\item\textbf{$\beta$}:
+	Najmanji ishod koji igrač MIN (crni) ima osiguran. (init = $inf$)
+\end{itemize}
+
+Čim u nekom čvoru vrijedi:
+\[
+\beta \le \alpha
+\]
+prekidamo pretragu grane. Ta grana nikad neće biti bolja opcija!
+\end{frame}
+
+\begin{frame}{Primjer}
+\centering
+$\alpha = -\infty$
+$\beta = \infty$\\
+$\beta > \alpha$
+\includegraphics[width=\textwidth, height=0.82\textheight, keepaspectratio]{Materijali/ab00.png}
+\end{frame}
+
+\begin{frame}{Primjer}
+\centering
+$\alpha = -1$
+$\beta = \infty$\\
+$\beta > \alpha$
+\includegraphics[width=\textwidth, height=0.82\textheight, keepaspectratio]{Materijali/ab01.png}
+\end{frame}
+
+\begin{frame}{Primjer}
+\centering
+$\alpha = 3$
+$\beta = \infty$\\
+$\beta > \alpha$
+\includegraphics[width=\textwidth, height=0.82\textheight, keepaspectratio]{Materijali/ab1.png}
+\end{frame}
+
+\begin{frame}{Primjer}
+\centering
+$\alpha = 3$
+$\beta = \infty$\\
+$\beta > \alpha$
+\includegraphics[width=\textwidth, height=0.82\textheight, keepaspectratio]{Materijali/ab2.png}
+\end{frame}
+
+\begin{frame}{Primjer}
+\centering
+$\alpha = -\infty$
+$\beta = 3$\\
+$\beta > \alpha$
+\includegraphics[width=\textwidth, height=0.82\textheight, keepaspectratio]{Materijali/ab3.png}
+\end{frame}
+
+\begin{frame}{Primjer}
+\centering
+$\alpha = 5$
+$\beta = 3$\\
+$\beta \le \alpha$ (rez!)
+\includegraphics[width=\textwidth, height=0.82\textheight, keepaspectratio]{Materijali/ab4.png}
+\end{frame}
+
+\begin{frame}{Primjer}
+\centering
+$\alpha = 5$
+$\beta = 3$\\
+$\beta \le \alpha$ (rez!)
+\includegraphics[width=\textwidth, height=0.82\textheight, keepaspectratio]{Materijali/ab5.png}
+\end{frame}
+
+\begin{frame}{Primjer}
+\centering
+$\alpha = 3$
+$\beta = \infty$\\
+$\beta > \alpha$
+\includegraphics[width=\textwidth, height=0.82\textheight, keepaspectratio]{Materijali/ab6.png}
+\end{frame}
+
+\begin{frame}{Primjer}
+\centering
+$\alpha = 3$
+$\beta = \infty$\\
+$\beta > \alpha$
+\includegraphics[width=\textwidth, height=0.82\textheight, keepaspectratio]{Materijali/ab7.png}
+\end{frame}
+
+\begin{frame}{Primjer}
+\centering
+$\alpha = 3$
+$\beta = \infty$\\
+$\beta > \alpha$
+\includegraphics[width=\textwidth, height=0.82\textheight, keepaspectratio]{Materijali/ab8.png}
+\end{frame}
+
+\begin{frame}{Primjer}
+\centering
+$\alpha = 3$
+$\beta = \infty$\\
+$\beta > \alpha$
+\includegraphics[width=\textwidth, height=0.82\textheight, keepaspectratio]{Materijali/ab9.png}
+\end{frame}
+
+\begin{frame}{Primjer}
+\centering
+$\alpha = 3$
+$\beta = -4$\\
+$\beta \le \alpha$ (rez!)
+\includegraphics[width=\textwidth, height=0.82\textheight, keepaspectratio]{Materijali/ab10.png}
+\end{frame}
+
+\begin{frame}[t, fragile]{Implementacija: $\alpha$-$\beta$ podrezivanje}
+	\begin{lstlisting}[
+    	language=Python,
+    	basicstyle=\ttfamily\tiny,
+    	lineskip=-2.5pt,
+    	basewidth=0.5em,
+    	numbers=left,
+    	numberstyle=\tiny\color{gray},
+    	xleftmargin=1.2em,
+    	emph={alpha,beta},
+    	emphstyle=\color{red}\bfseries
+]
+def alfa_beta_podrezivanje(pozicija: Stablo, dubina: int, bojaIgraca: bool, 
+                        alpha: float = float('-inf'), 
+                        beta: float = float('inf')):
+    najbolje_dijete = None
+    if dubina == 0 or pozicija.je_list():
+        if pozicija.evaluacija is None:
+            pozicija.evaluacija = staticka_evaluacija(pozicija)
+        return pozicija.evaluacija, None
+
+    if bojaIgraca == BIJELA:
+        najbolja_evaluacija = float('-inf')
+        for dijete in pozicija.djeca:
+            vrijednost, _ = alfa_beta_podrezivanje(dijete, dubina-1, CRNA, alpha, beta)
+            if vrijednost > najbolja_evaluacija:
+                najbolja_evaluacija = vrijednost
+                najbolje_dijete = dijete
+            alpha = max(najbolja_evaluacija, alpha)
+            if beta <= alpha:
+                break
+
+    if bojaIgraca == CRNA:
+        najbolja_evaluacija = float('inf')
+        for dijete in pozicija.djeca:
+            vrijednost, _ = alfa_beta_podrezivanje(dijete, dubina-1, BIJELA, alpha, beta)
+            if vrijednost < najbolja_evaluacija:
+                najbolja_evaluacija = vrijednost
+                najbolje_dijete = dijete
+            beta = min(najbolja_evaluacija, beta)
+
+            if beta <= alpha:
+                break
+    pozicija.evaluacija = najbolja_evaluacija   
+    return najbolja_evaluacija, najbolje_dijete
+	\end{lstlisting}
+\end{frame}
+
+
+\begin{frame}{Korektnost $\alpha$-$\beta$ podrezivanja}
+	Neka je $M(v) \in \mathbb{R}$ stvarna vrijednost Minimax stabla u čvoru $v$. Funkcija $\text{AlphaBeta}(v, d, \alpha, \beta) \in \mathbb{R}$ računa vrijednost odsječenu na interval $[\alpha, \beta]$:
 	
+	\begin{block}{Teorem: Knuth \& Moore, 1975}
+		Za svaki čvor $v$ i parametre pretrage $\alpha < \beta$ vrijedi identitet:
+		\[
+		\text{AlfaBeta}(v, d, \alpha, \beta) = \min\big(\beta, \, \max(\alpha, \, M(v))\big)
+		\]
+	\end{block}
+	
+	\pause
+	\vspace{0.2cm}
+	Pokretanjem algoritma iz korijena $v_0$ s vrijednostima $\alpha = -\infty, \beta = +\infty$ Dobivamo:
+	\[
+		\text{AlfaBeta}(v_0, d, -\infty, \infty) = \min\big(+\infty, \, \max(-\infty, \, M(v_0))\big) = \,M(v_0)
+		\]
+	
+	\pause
+	\vspace{0.2cm}
+\end{frame}
+
+\begin{frame}{Skica dokaza korektnosti (1/2)}
+	Matematička indukcija po dubini stabla $d$:
+	
+	\begin{itemize}
+		\item \textbf{Baza indukcije ($d = 0$):} 
+		Za listove oba algoritma vraćaju statičku evaluaciju $Eval(v) = M(v)$ u rasponu $[\alpha, \beta]$.
+		
+		\pause
+		\vspace{0.4cm}
+		\item \textbf{Korak indukcije:} 
+		Pretpostavimo da tvrdnja vrijedi za sva stabla dubine $d = k$. To znači da za svako dijete $w$ na dubini $k$ algoritam točno računa:
+		\[
+		\text{AlfaBeta}(w, k, \alpha, \beta) = \min(\beta, \, \max(\alpha, \, M(w)))
+		\]
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Skica dokaza korektnosti (2/2)}
+	Promatramo BSO MAX čvor $v$ čija su djeca $w_1, \dots, w_m$ podstabla dubine $k$. Prava Minimax vrijednost je $M(v) = \max_i M(w_i)$.
+	
+	\pause
+	\vspace{0.2cm}
+	\begin{enumerate}
+		\item Algoritam redom ispituje djecu i ažurira donju među:
+		\[
+		\alpha_{\text{novo}} = \max(\alpha_{\text{staro}}, \, M(w_i))
+		\]
+		\pause
+		\item Ako za neko dijete $w_j$ zadovolji se uvjet reza $\alpha_{\text{novo}} \ge \beta$:
+		\[
+		M(v) \ge M(w_j) \ge \beta
+		\]
+		\pause
+		\item Budući da za svaki $M(v) \ge \beta$ vrijedi:
+		\[
+		\min(\beta, \, \max(\alpha, \, M(v))) = \beta
+		\]
+		preostala djeca $w_{j+1}, \dots, w_m$ mogu samo dodatno povećati vrijednost, a ne je smanjiti.
+	\end{enumerate}
+	
+	\pause
+	\vspace{0.2cm}
+	Prekidom pretrage dobivena vrijednost ostaje točno $\beta$. $\qed$
+\end{frame}
+
+\begin{frame}{Igraju li računala šah ovako i danas?}
+\textbf{AlphaZero (Prosinac 2017)} - Pregazio tadašnji Stockfish 8.\\
+Ne koristi Minimax nego \textbf{Monte Carlova Pretraga Stabla (MCTS)}
+\begin{itemize}
+		\item \textbf{Osnovna ideja:} Asimetrična pretraga vođena statistikom simulacija umjesto pretrage fiksne dubine u širinu.
+		\pause
+		\vspace{0.2cm}
+		\item \textbf{Ključna mehanika:} 
+		\textit{Selekcija} $\to$ \textit{Ekspanzija} $\to$ \textit{Evaluacija} $\to$ \textit{Propagacija unatrag}.
+		\pause
+		\vspace{0.2cm}
+		\item Kombinacijom s dubokim neuronskim mrežama (AlphaZero) rješava problem prevelikog faktora grananja.
+	\end{itemize}
+
+	\pause
+	\vspace{0.4cm}
+	\begin{block}{Za one koji žele znati više}
+		\footnotesize
+		\begin{itemize}
+			\item C.~Browne et al., \emph{A Survey of Monte Carlo Tree Search Methods}, IEEE TCIAIG, 2012. (pregled algoritma i UCT/PUCT selekcije)
+			\item D.~Silver et al., \emph{A general reinforcement learning algorithm that masters chess, shogi, and Go through self-play}, Science, 2018. (arhitektura AlphaZero sistema)
+		\end{itemize}
+	\end{block}
+\end{frame}
+
+\begin{frame}{Stockfish uzvrača udarac}
+Stockfish zadržava $\alpha$-$\beta$ Minimax pretragu po stablima.
+Više ne koristi tvrdo-kodirane funkcije evaluacije. Prelazi na \textbf{Učinkovito ažurabilnu neuronsku mrežu (NNUE):\footnote{Yu Nasu, 2018. (izvorno za Shogi, integrirano u Stockfish 12 u kolovozu 2020.)}}\\
+Koristi malu plitku neuronsku mrežu unutar $\alpha$-$\beta$ pretrage.
+
+\textbf{Ključne inženjerske prednosti:}
+	\begin{itemize}
+		\item \textbf{Inkrementalno (diferencijalno) ažuriranje:} Pri potezu se ne evaluira cijela mreža ispočetka, već samo promjene nastale pomakom jedne figure.
+		\pause
+		\item \textbf{Izvođenje na CPU-u:} Koristi SIMD/AVX vektorske instrukcije i cjelobrojnu (int8/int16) aritmetiku umjesto teških GPU matrica.
+		\pause
+		\item \textbf{Brzina:} Omogućuje evaluaciju desetaka milijuna pozicija u sekundi uz pozicijsko razumijevanje na razini dubokih mreža.
+	\end{itemize}
+\end{frame}
+
+\begin{frame}
+\centering
+	\vfill
+	{\Huge\textbf{Hvala na pažnji!}}
+\end{frame}
+
+\begin{frame}{Literatura}
+\footnotesize
+	\begin{thebibliography}{9}
+		\bibitem{shannon1950}
+		C.~E.~Shannon,
+		\emph{Programming a Computer for Playing Chess},
+		Philosophical Magazine, Ser. 7, Vol. 41, No. 314, 1950.
+		
+		\bibitem{knuth1975}
+		D.~E.~Knuth, R.~W.~Moore,
+		\emph{An Analysis of Alpha-Beta Pruning},
+		Artificial Intelligence, 6(4): 293--326, 1975.
+		
+		\bibitem{tromp2022}
+		J.~Tromp,
+		\emph{Counting Chess Positions},
+		ICGA Journal, 44(2): 73--83, 2022.
+		
+		\bibitem{browne2012}
+		C.~Browne et al.,
+		\emph{A Survey of Monte Carlo Tree Search Methods},
+		IEEE Transactions on Computational Intelligence and AI in Games, 4(1): 1--43, 2012.
+		
+		\bibitem{silver2018}
+		D.~Silver et al.,
+		\emph{A general reinforcement learning algorithm that masters chess, shogi, and Go through self-play},
+		Science, 362(6419): 1140--1144, 2018.
+		
+		\bibitem{nnue2018}
+		Y.~Nasu,
+		\emph{Efficiently Updatable Neural-Network-based Evaluation Functions for computer shogi},
+		2018. (Stockfish integracija, 2020.)
+	\end{thebibliography}
+
+\end{frame}
+
+
 \end{document}
