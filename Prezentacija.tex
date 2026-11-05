@@ -27,7 +27,7 @@
 	
 	\begin{frame}{Antagonističke igre}
 		\begin{itemize}
-		\item Antagonističke igre su one koje se sastoje od dva ili više igrača koji imaju suprotne ciljeve. Pobjeda jednog igrača znači identičan i absolutni gubitak za ostale igrače.
+		\item Antagonističke igre su one koje se sastoje od dva ili više igrača koji imaju suprotne ciljeve. Pobjeda jednog igrača znači identičan i apsolutni gubitak za ostale igrače.
 		\item Primjeri: šah, križić kružić, go, shogi
 		\end{itemize}
 	\end{frame}
@@ -205,7 +205,7 @@
 	
 \begin{frame}{Minimax algoritam}
 	\begin{itemize}
-		\item Za minimax radi na način da uzmemo dubinu $d$ traženja.
+		\item Minimax radi na način da uzmemo dubinu $d$ traženja.
 		\item sve čvorove na dubini $d$ evaluiramo funkcijom statičke evaluacije
 		\item ovisno o igraču pronađemo minimum ili maximum sve djece čvora i njemu pridružujemo tu vrijednost
 	\end{itemize}
@@ -303,9 +303,9 @@ Minimax izračunava sve čvorove. Mora li ih sve?\\
 \textbf{$\alpha$-$\beta$ podrezivanje}:\\
 \begin{itemize}
 	\item\textbf{$\alpha$}:
-	Največi ishod koji igrač MAX (bijeli) ima osiguran. (init = $-\infty$)
+	Najveći ishod koji igrač MAX (bijeli) ima osiguran. (init = $-\infty$)
 	\item\textbf{$\beta$}:
-	Najmanji ishod koji igrač MIN (crni) ima osiguran. (init = $inf$)
+	Najmanji ishod koji igrač MIN (crni) ima osiguran. (init = $\infty$)
 \end{itemize}
 
 Čim u nekom čvoru vrijedi:
@@ -472,7 +472,7 @@ def alfa_beta_podrezivanje(pozicija: Stablo, dubina: int, bojaIgraca: bool,
 	
 	\pause
 	\vspace{0.2cm}
-	Pokretanjem algoritma iz korijena $v_0$ s vrijednostima $\alpha = -\infty, \beta = +\infty$ Dobivamo:
+	Pokretanjem algoritma iz korijena $v_0$ s vrijednostima $\alpha = -\infty, \beta = +\infty$ dobivamo:
 	\[
 		\text{AlfaBeta}(v_0, d, -\infty, \infty) = \min\big(+\infty, \, \max(-\infty, \, M(v_0))\big) = \,M(v_0)
 		\]
@@ -509,7 +509,7 @@ def alfa_beta_podrezivanje(pozicija: Stablo, dubina: int, bojaIgraca: bool,
 		\alpha_{\text{novo}} = \max(\alpha_{\text{staro}}, \, M(w_i))
 		\]
 		\pause
-		\item Ako za neko dijete $w_j$ zadovolji se uvjet reza $\alpha_{\text{novo}} \ge \beta$:
+		\item Ako se za neko dijete $w_j$ zadovolji uvjet reza $\alpha_{\text{novo}} \ge \beta$:
 		\[
 		M(v) \ge M(w_j) \ge \beta
 		\]
@@ -551,7 +551,7 @@ Ne koristi Minimax nego \textbf{Monte Carlova Pretraga Stabla (MCTS)}
 	\end{block}
 \end{frame}
 
-\begin{frame}{Stockfish uzvrača udarac}
+\begin{frame}{Stockfish uzvraća udarac}
 Stockfish zadržava $\alpha$-$\beta$ Minimax pretragu po stablima.
 Više ne koristi tvrdo-kodirane funkcije evaluacije. Prelazi na \textbf{Učinkovito ažurabilnu neuronsku mrežu (NNUE):\footnote{Yu Nasu, 2018. (izvorno za Shogi, integrirano u Stockfish 12 u kolovozu 2020.)}}\\
 Koristi malu plitku neuronsku mrežu unutar $\alpha$-$\beta$ pretrage.
