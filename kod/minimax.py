@@ -66,8 +66,6 @@ def minimax(pozicija: Stablo, dubina: int, bojaIgraca: bool):
 def alfa_beta_podrezivanje(pozicija: Stablo, dubina: int, bojaIgraca: bool, 
                         alpha: float = float('-inf'), 
                         beta: float = float('inf')):
-
-
     najbolje_dijete = None
     if dubina == 0 or pozicija.je_list():
         if pozicija.evaluacija is None:
@@ -82,12 +80,9 @@ def alfa_beta_podrezivanje(pozicija: Stablo, dubina: int, bojaIgraca: bool,
                 najbolja_evaluacija = vrijednost
                 najbolje_dijete = dijete
             alpha = max(najbolja_evaluacija, alpha)
-
             if beta <= alpha:
                 break
 
-
-        
     if bojaIgraca == CRNA:
         najbolja_evaluacija = float('inf')
         for dijete in pozicija.djeca:
@@ -99,9 +94,7 @@ def alfa_beta_podrezivanje(pozicija: Stablo, dubina: int, bojaIgraca: bool,
 
             if beta <= alpha:
                 break
-
     pozicija.evaluacija = najbolja_evaluacija   
-
     return najbolja_evaluacija, najbolje_dijete
 
 

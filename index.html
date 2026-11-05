@@ -4,30 +4,31 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#171b20">
-  <meta name="description" content="Predložak seminarskog rada Kako računala igraju šah? — Matija Njegač.">
+  <meta name="description" content="Kako računala igraju šah? — Matija Njegač.">
   <title>Kako računala igraju šah | Seminar</title>
   <link rel="stylesheet" href="assets/style.css">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 <body>
   <a class="skip-link" href="#sadrzaj">Preskoči na sadržaj</a>
   <header>
     <nav aria-label="Glavna navigacija">
-      <a href="#sadrzaj">Rad</a>
-      <a href="#prezentacija">Prezentacija</a>
-      <a href="#kod">Kod</a>
-      <a href="#zadaci">Zadaci</a>
-      <a href="#izvori">Izvori</a>
-      <a href="#ai">Uporaba AI-ja</a>
+      <a href="https://github.com/RickHam/Sah-Seminar">Github fileovi</a>
     </nav>
   </header>
   <main id="sadrzaj">
     <article>
       <h1>Kako računala igraju šah?</h1>
-      <p class="byline">Matija Njegač · Seminar (Računarstvo i Matematika)<br>PMF Zagreb · Datum izlaganja: dopuniti</p>
+      <p class="byline">Matija Njegač · Seminar (Računarstvo i Matematika)<br>PMF Zagreb · Datum izlaganja: 6.11.2026.</p>
       <p><a href="#prezentacija">Prezentacija</a> · <a href="#kod">Izvorni kod</a> · <a href="#zadaci">Zadaci</a> · <a href="#izvori">Izvori</a></p>
-      <p class="draft"><em>Predložak u izradi. Naslovi su prijedlog strukture; tekst u uglatim zagradama zamijeni vlastitim sadržajem prije objave.</em></p>
-      <!-- Ovdje dodaj vlastiti kratak sažetak rada. -->
-      <p class="placeholder">[Ovdje napiši vlastiti sažetak seminara.]</p>
+      <p>
+        U radu se istražuje kako računala igraju šah. 
+        Fokus je primarno na matematičkim osnovama i teorijskim temeljima 
+        koje je postavio Claude Shannon 1950. godine — modeliranje partije 
+        usmjerenim stablom, statičku evaluaciju i Minimax pretragu sa i 
+        bez &alpha;-&beta; podrezivanja.
+      </p>
       <details class="contents">
         <summary>Sadržaj rada</summary>
         <ol>
@@ -37,167 +38,406 @@
           <li><a href="#evaluacija">Evaluacija pozicije i njezina ograničenja</a></li>
           <li><a href="#nnue">Stockfish i NNUE</a></li>
           <li><a href="#mcts">AlphaZero i MCTS</a></li>
-          <li><a href="#baze">Knjige otvaranja i baze završnica</a></li>
-          <li><a href="#zakljucak">Zaključak</a></li>
         </ol>
       </details>
 
       <section id="uvod">
         <h2>Uvod i motivacija</h2>
-        <p class="placeholder">[Ovdje napiši uvod, cilj rada i motivacijski primjer.]</p>
+        <p>
+          Šah pripada klasi antagonističkih igara koje se temelje na ideji 
+          da pobjeda jednog igrača znači direktan poraz drugog igrača. 
+          Također je deterministička igra s potpunom informacijom. 
+          Slučajnost ne igra nikakvu ulogu.
+        </p>
       </section>
 
       <section id="stablo">
         <h2>Stablo igre</h2>
-        <p class="placeholder">[Ovdje uvedi pojmove pozicije, poteza, dubine i grananja. Dodaj vlastiti dijagram i matematički opis.]</p>
-      </section>
-
-      <section id="minimax">
-        <h2>Minimax i alfa-beta podrezivanje</h2>
-        <p class="placeholder">[Ovdje objasni algoritme, prikaži vlastiti primjer i argument ispravnosti.]</p>
+        <p>
+          Determinističku igru dvaju igrača s potpunom informacijom 
+          modeliramo usmjerenim stablom \(T = (V, E)\):
+        </p>
+        <ul>
+          <li><strong>Korijen \(v_0 \in V\):</strong> Početno stanje igre</li>
+          <li>
+            <strong>Skup čvorova \(V\):</strong> Pozicije. 
+            Svakom neterminalnom čvoru pridružen je igrač na potezu \(P(v) \in \{\text{MAX}, \text{MIN}\}\). 
+            Šahovsku poziciju jednoznačno definiramo položajem figura, 
+            vrijednosti P(v), mogučnost rošada, ,mogučnost en passanta 
+            i brojem poteza od zadnje pojedene figure ili pomaknutog pješaka.
+          </li>
+          <li><strong>Usmjereni bridovi \(E\):</strong> Legalni potezi koji vode iz jednog stanja u drugo.</li>
+          <li>
+            <strong>Listovi (terminalni čvorovi) \(V_T \subset V\):</strong> 
+            Završne pozicije partije (mat, pat, remi) gdje je definirana funkcija isplate 
+            \(f \colon V_T \to \{-1, 0, 1\}\) prema Shannonovoj definiciji. 
+            Nekad se uzima da je kodomena = {0, 1/2, 1}
+          </li>
+        </ul>
+        <p>
+          Svaki usmjereni put od korijena \(v_0\) do nekog lista u \(V_T\) 
+          predstavlja jednu odigranu partiju. Prema Trompu (2022.), 
+          ukupan broj mogućih legalnih šahovskih pozicija iznosi 
+          približno \(4.822 \times 10^{44}\)[izvor: 3]. Ako uzmemo u obzir 
+          da prosječno postoje 30 legalnih poteza \(b \approx 30\) i prosječno 
+          trajanje partije od \(d \approx 80\) polupoteza, veličina stabla 
+          iznosi \(b^d = 30^{80} \approx 10^{120}\) (Shannonov broj). 
+          Trebamo funkciju evaluacije.
+        </p>
       </section>
 
       <section id="evaluacija">
         <h2>Evaluacija pozicije i njezina ograničenja</h2>
-        <p class="placeholder">[Ovdje razradi evaluaciju te provjeren primjer tvrđave ili ograničenog horizonta pretrage.]</p>
+        <p>
+          Uvodimo funkciju statičke evaluacije \[Eval: V \to \mathbb{R}\]
+          Ideja je da u zadanoj dubini statički odredimo realnu vrijednost pozicije.
+          Pozitivna predstavlja prednost bijelog, negativna prednost crnog. 
+          Shannon je predložio svoju funkciju:
+        </p>
+        <p>
+          \[
+          Eval(P) = 200(K - K') + 9(Q - Q') + 5(R - R') + 3(B - B' + N - N') + (P - P') - 0.5(D - D' + S - S' + I - I') + 0.1(M - M')
+          \]
+        </p>
+        <p>
+          gdje su uzeti u obzir materijal, 
+          poduplani (\(D\)), izolirani (\(I\)) i zaostali (\(S\)) pješaci 
+          te mobilnost figura (\(M\)). Do prošlog desetljeća se razvoj temeljio na ručno kodiranje parametara.
+          (primjerice, IBM-ov Deep Blue koji je pobjedio Kasparova je 1997. koristio hardverski implementiranih 8000 ručno ugođenih parametara).
+        </p>
+        <p>
+        </p>
       </section>
+
+      <section id="minimax">
+  <h2>Minimax i alfa-beta podrezivanje</h2>
+  <p>
+    Kako stablo igre zbog njegove veličine ne možemo pretražiti u cjelini, pretragu 
+    ograničavamo na unaprijed zadanu dubinu \(d\). Minimax algoritam polazi od 
+    pretpostavke da oba igrača vuku najbolje moguće poteze: igrač s bijelim figurama 
+    (MAX) nastoji postići što veću ocjenu pozicije, dok igrač s crnim figurama (MIN) 
+    tu istu vrijednost nastoji što više umanjiti. Rekurzivni izraz za Minimax 
+    vrijednost \(M(v)\) glasi:
+  </p>
+  <p>
+    \[
+    M(v) = \begin{cases} 
+    Eval(v), & \text{ako je } v \text{ list na dubini } d = 0 \\
+    \max_{w \in \text{djeca}(v)} M(w), & \text{ako je na potezu MAX (bijeli)} \\
+    \min_{w \in \text{djeca}(v)} M(w), & \text{ako je na potezu MIN (crni)}
+    \end{cases}
+    \]
+  </p>
+  <p>
+    Izvorni Minimax mora obići sve čvorove do zadane dubine, što je računski izuzetno 
+    zahtjevno. Znatno ubrzanje postižemo postupkom <strong>&alpha;-&beta; podrezivanja</strong>, 
+    pri čemu tijekom obilaska stabla održavamo međe pretrage:
+  </p>
+  <ul>
+    <li>
+      \(\alpha\): donja međa, odnosno najbolji (najveći) ishod koji je igrač MAX 
+      već osigurao duž trenutnoga puta (početno postavljen na \(-\infty\)).
+    </li>
+    <li>
+      \(\beta\): gornja međa, odnosno najnepovoljniji (najmanji) ishod na koji igrač MIN 
+      može prisiliti bijeloga (početno postavljen na \(+\infty\)).
+    </li>
+  </ul>
+  <p>
+    Čim u promatranome čvoru se zadovolji uvjet \(\beta \le \alpha\), daljnji pregled te 
+    podgrane možemo prekinuti jer protivnik raspolaže potezom kojim sprječava prelazak 
+    u ta stanja.
+
+    Dokaz ispravnosti je dan u prezentaciji.
+  </p>
+    
+  <section id="kod">
+        <h2>Programski dio</h2>
+        <p>
+          U sklopu rada razvijena je demonstracijska Python implementacija Minimax algoritma 
+          i &alpha;-&beta; podrezivanja nad općom strukturom stabla pozicija. 
+          Implementacija demonstrira mehanizam prosljeđivanja granica, ažuriranje parametara 
+          te prekidanje grana kada nastupi uvjet reza \(\beta \le \alpha\):
+        </p>
+        
+        <pre><code>import networkx as nx
+import matplotlib.pyplot as plt
+import random
+import copy
+import time
+from typing import Optional
+
+BIJELA = 1
+CRNA = 0
+
+class Stablo:
+    def __init__(self, boja: bool, evaluacija: Optional[float] = None):
+        self.boja = boja
+        self.evaluacija = evaluacija
+        self.djeca: list['Stablo'] = []
+
+    def dodaj_dijete(self, dijete: 'Stablo'):
+        self.djeca.append(dijete)
+
+    def daj_boju(self):
+        return self.boja
+    
+    def daj_evaluaciju(self):
+        return self.evaluacija
+
+    def postavi_evaluaciju(self, eval):
+        self.evaluacija = eval
+
+    def je_list(self):
+        return len(self.djeca) == 0
+
+
+def staticka_evaluacija(pozicija: Stablo):
+    # U svrhu primjera koristimo uniformnu raspodjelu
+    return random.uniform(-10, 10)
+
+
+def minimax(pozicija: Stablo, dubina: int, bojaIgraca: bool):
+    najbolje_dijete = None
+    if dubina == 0 or pozicija.je_list():
+        if pozicija.evaluacija is None:
+            pozicija.evaluacija = staticka_evaluacija(pozicija)
+        return pozicija.evaluacija, None
+
+    if bojaIgraca == BIJELA:
+        najbolja_evaluacija = float('-inf')
+        for dijete in pozicija.djeca:
+            vrijednost, _ = minimax(dijete, dubina - 1, CRNA)
+            if vrijednost > najbolja_evaluacija:
+                najbolja_evaluacija = vrijednost
+                najbolje_dijete = dijete
+        
+    if bojaIgraca == CRNA:
+        najbolja_evaluacija = float('inf')
+        for dijete in pozicija.djeca:
+            vrijednost, _ = minimax(dijete, dubina - 1, BIJELA)
+            if vrijednost < najbolja_evaluacija:
+                najbolja_evaluacija = vrijednost
+                najbolje_dijete = dijete
+
+    pozicija.evaluacija = najbolja_evaluacija   
+    return najbolja_evaluacija, najbolje_dijete
+
+
+def alfa_beta_podrezivanje(pozicija: Stablo, dubina: int, bojaIgraca: bool, 
+                           alpha: float = float('-inf'), 
+                           beta: float = float('inf')):
+    najbolje_dijete = None
+    if dubina == 0 or pozicija.je_list():
+        if pozicija.evaluacija is None:
+            pozicija.evaluacija = staticka_evaluacija(pozicija)
+        return pozicija.evaluacija, None
+
+    if bojaIgraca == BIJELA:
+        najbolja_evaluacija = float('-inf')
+        for dijete in pozicija.djeca:
+            vrijednost, _ = alfa_beta_podrezivanje(dijete, dubina - 1, CRNA, alpha, beta)
+            if vrijednost > najbolja_evaluacija:
+                najbolja_evaluacija = vrijednost
+                najbolje_dijete = dijete
+            alpha = max(najbolja_evaluacija, alpha)
+            if beta <= alpha:
+                break
+
+    if bojaIgraca == CRNA:
+        najbolja_evaluacija = float('inf')
+        for dijete in pozicija.djeca:
+            vrijednost, _ = alfa_beta_podrezivanje(dijete, dubina - 1, BIJELA, alpha, beta)
+            if vrijednost < najbolja_evaluacija:
+                najbolja_evaluacija = vrijednost
+                najbolje_dijete = dijete
+            beta = min(najbolja_evaluacija, beta)
+            if beta <= alpha:
+                break
+
+    pozicija.evaluacija = najbolja_evaluacija   
+    return najbolja_evaluacija, najbolje_dijete</code></pre>
+      </section>
+</section>
 
       <section id="nnue">
         <h2>Stockfish i NNUE</h2>
-        <p class="placeholder">[Ovdje razradi ulogu NNUE-a koristeći provjerenu dokumentaciju i navedi verziju enginea.]</p>
+        <p>
+          Stockfish je godinama bio vodeći predstavnik klasične &alpha;-&beta; pretrage 
+          s ručno pisanim evaluacijama (HCE). Prekretnica u njegovom razvoju dogodila se uvođenjem 
+          <strong>NNUE</strong> (<em>Efficiently Updatable Neural Network</em> — učinkovito ažurabilna neuronska mreža) 
+          arhitekture, koju je 2018. razvio Yu Nasu za Shogi, a u kolovozu 2020. 
+          službeno je integrirana u Stockfish 12.
+        </p>
+        <p>
+          NNUE zamjenjuje klasičnu Shannonovu evaluaciju plitkom neuronskom mrežom 
+          koja se izvodi izravno na procesoru (CPU). Ključne prednosti ove arhitekture su:
+        </p>
+        <ul>
+          <li>
+            <strong>Inkrementalno (diferencijalno) ažuriranje:</strong> 
+            Budući da jedan potez mijenja položaj tek jedne ili dviju figura, 
+            akumulator prvog sloja mreže ne računa se ispočetka matricama, 
+            već se primjenjuje brza vektorska diferencija — težine odlaznog polja se oduzimaju, 
+            a težine dolaznog polja dodaju.
+          </li>
+          <li>
+            <strong>CPU optimizacija i SIMD instrukcije:</strong> 
+            Korištenjem cjelobrojne aritmetike (int8 i int16) te modernih AVX2/AVX-512 
+            vektorskih instrukcija procesora, mreža postiže brzine od preko 50 milijuna evaluacija u sekundi.
+            Za više informacija pogledati izvor 7.
+          </li>
+        </ul>
+        <p>
+          Time je Stockfish zadržao ogromnu dubinu pretrage koju omogućuje &alpha;-&beta; podrezivanje, 
+          ali uz pozicijsku točnost evaluacije svojstvenu neuronskim mrežama.
+        </p>
       </section>
 
       <section id="mcts">
         <h2>AlphaZero i MCTS</h2>
-        <p class="placeholder">[Ovdje razradi učenje i pretraživanje prema primarnim izvorima. Razdvoji ulogu mreže od algoritma pretrage.]</p>
-      </section>
-
-      <section id="baze">
-        <h2>Knjige otvaranja i baze završnica</h2>
-        <p class="placeholder">[Ovdje razradi njihovu svrhu, primjere i ograničenja.]</p>
-      </section>
-
-      <section id="zakljucak">
-        <h2>Zaključak</h2>
-        <p class="placeholder">[Ovdje napiši vlastite zaključke i pitanja za diskusiju.]</p>
-      </section>
-
-      <section id="prezentacija">
-        <h2>Prezentacija</h2>
-        <p class="placeholder">[PDF prezentacija još nije dodana.]</p>
-        <!-- Kopiraj svoj PDF u materijali/seminar.pdf. Zatim zamijeni prethodni odlomak s:
-        <p><a href="materijali/seminar.pdf">Preuzmi prezentaciju (PDF)</a></p>
-        -->
-      </section>
-      <section id="kod">
-        <h2>Programski dio</h2>
-        <p class="placeholder">[Ovdje opiši vlastitu implementaciju i dodaj poveznicu na kod u svojem GitHub repozitoriju.]</p>
-        <h3>Pokretanje</h3>
-        <p class="placeholder">[Navedi jezik i verziju, ovisnosti, naredbu za pokretanje te primjer ulaza i očekivanog izlaza.]</p>
-        <!-- Primjer HTML oznaka za prikaz vlastitog koda:
-        <pre><code>Ovdje unesi vlastiti kod.</code></pre>
-        Kodiraj znak manje od kao &lt; i ampersand kao &amp; unutar HTML-a.
-        -->
-      </section>
-      <section id="zadaci">
-        <h2>Zadaci za slušatelje</h2>
-        <p class="placeholder">[Zadaci još nisu objavljeni. Zadrži jedan do tri zadatka i ukloni neiskorištene stavke.]</p>
+        <p>
+          U prosincu 2017. DeepMind predstavlja <strong>AlphaZero</strong>, 
+          sustav koji je u potpunosti napustio Minimax stablo i klasične evaluacijske heuristike, 
+          svladavši tadašnji Stockfish 8 isključivo samostalnim učenjem (reinforcement learning kroz self-play).
+        </p>
+        <p>
+          AlphaZero koristi <strong>Monte Carlovu Pretragu Stabla (MCTS)</strong>, 
+          algoritam koji stablo igre gradi asimetrično. Umjesto pretrage svih poteza do fiksne dubine, 
+          simulacije se usmjeravaju duž najperspektivnijih grana kroz četiri faze:
+        </p>
         <ol>
-          <li>[Ovdje unesi prvi zadatak.]</li>
-          <li>[Ovdje unesi drugi zadatak — neobavezno.]</li>
-          <li>[Ovdje unesi treći zadatak — neobavezno.]</li>
+          <li>
+            <strong>Selekcija (Selection):</strong> 
+            Krećući se od korijena prema dolje, biraju se potezi koji balansiraju 
+            kvalitetu i istraživanje pomoću PUCT formule vođene apriornom vjerojatnošću mreže.
+          </li>
+          <li>
+            <strong>Ekspanzija (Expansion):</strong> 
+            Dolaskom do stanja koje još nije u stablu, stvara se novi čvor.
+          </li>
+          <li>
+            <strong>Evaluacija (Evaluation):</strong> 
+            Duboka rezidualna konvolucijska mreža \(f_\theta(s) = (\mathbf{p}, v)\) 
+            procjenjuje poziciju: vektor \(\mathbf{p}\) daje vjerojatnosti poteza, 
+            a skalar \(v \in [-1, 1]\) procjenu vjerojatnosti pobjede.
+          </li>
+          <li>
+            <strong>Propagacija unatrag (Backpropagation):</strong> 
+            Dobivena procjena propagira se natrag do korijena, ažurirajući 
+            broj posjeta i akumuliranu vrijednost čvorova.
+          </li>
         </ol>
-        <p class="placeholder">[Ovdje dodaj način i rok predaje. Zadaci se rješavaju isti dan, idealno tijekom izlaganja.]</p>
+        <p>
+          Zbog iznimne preciznosti duboke mreže, AlphaZero je pretraživao tek oko 60.000 pozicija u sekundi 
+          (u usporedbi s desecima milijuna kod Stockfisha), pokazavši nadmoć asimetrične pretrage 
+          vođene dubokim reprezentacijama nad sirovom dubinom grananja. Više informacija u izvorima 4, 5
+        </p>
       </section>
+
       <section id="izvori">
-  <h2>Izvori</h2>
+        <h2>Izvori</h2>
+        <ol>
+          <li id="izvor-1">
+            Shannon, C. E.
+            „Programming a Computer for Playing Chess”.
+            <em>The London, Edinburgh, and Dublin Philosophical Magazine and Journal of Science</em>, Ser. 7, 41(314), 1950., str. 256–275.
+            <a href="https://doi.org/10.1080/14786445008521796" target="_blank" rel="noopener noreferrer">
+              DOI: 10.1080/14786445008521796
+            </a>;
+            <a href="https://www.computerhistory.org/chess/doc-431614f453dde/" target="_blank" rel="noopener noreferrer">
+              PDF u arhivu Computer History Museuma
+            </a>.
+          </li>
 
-  <ol>
-    <li id="izvor-1">
-      Russell, S. i Norvig, P.
-      <em>Artificial Intelligence: A Modern Approach.</em>
-      4. izdanje, Pearson, 2021.
-      Poglavlje 5: „Adversarial Search and Games”.
-      <a href="https://aima.cs.berkeley.edu/">
-        Službena stranica knjige
-      </a>.
-    </li>
+          <li id="izvor-2">
+            Knuth, D. E. i Moore, R. W.
+            „An Analysis of Alpha-Beta Pruning”.
+            <em>Artificial Intelligence</em>, 6(4), 1975., str. 293–326.
+            <a href="https://doi.org/10.1016/0004-3702(75)90019-3" target="_blank" rel="noopener noreferrer">
+              DOI: 10.1016/0004-3702(75)90019-3
+            </a>.
+          </li>
 
-    <li id="izvor-2">
-      Knuth, D. E. i Moore, R. W.
-      „An Analysis of Alpha-Beta Pruning”.
-      <em>Artificial Intelligence</em>, 6(4), 1975., str. 293–326.
-      <a href="https://doi.org/10.1016/0004-3702(75)90019-3">
-        DOI: 10.1016/0004-3702(75)90019-3
-      </a>.
-    </li>
+          <li id="izvor-3">
+            Tromp, J.
+            „Counting Chess Positions”.
+            <em>ICGA Journal</em>, 44(2), 2022., str. 73–83.
+            <a href="https://doi.org/10.3233/ICG-220204" target="_blank" rel="noopener noreferrer">
+              DOI: 10.3233/ICG-220204
+            </a>;
+            <a href="https://github.com/tromp/ChessPositionRanking" target="_blank" rel="noopener noreferrer">
+              GitHub repozitorij projekta
+            </a>.
+          </li>
 
-    <li id="izvor-3">
-      Stockfish contributors.
-      <em>NNUE — službena tehnička dokumentacija projekta Stockfish.</em>
-      <a href="https://official-stockfish.github.io/docs/nnue-pytorch-wiki/docs/nnue.html">
-        Dokumentacija NNUE-a
-      </a>;
-      <a href="https://github.com/official-stockfish/Stockfish">
-        izvorni kod Stockfisha
-      </a>.
-      <!-- Dodaj datum pristupa i verziju ili commit koji si proučavao. -->
-    </li>
+          <li id="izvor-4">
+            Browne, C. B. i sur.
+            „A Survey of Monte Carlo Tree Search Methods”.
+            <em>IEEE Transactions on Computational Intelligence and AI in Games</em>, 4(1), 2012., str. 1–43.
+            <a href="https://doi.org/10.1109/TCIAIG.2012.2186810" target="_blank" rel="noopener noreferrer">
+              DOI: 10.1109/TCIAIG.2012.2186810
+            </a>.
+          </li>
 
-    <li id="izvor-4">
-      Silver, D. i sur.
-      „A General Reinforcement Learning Algorithm That Masters
-      Chess, Shogi, and Go Through Self-Play”.
-      <em>Science</em>, 362(6419), 2018., str. 1140–1144.
-      <a href="https://doi.org/10.1126/science.aar6404">
-        DOI: 10.1126/science.aar6404
-      </a>.
-      <a href="https://discovery.ucl.ac.uk/id/eprint/10069050/">
-        Dostupna verzija u repozitoriju UCL-a
-      </a>.
-    </li>
+          <li id="izvor-5">
+            Silver, D. i sur.
+            „A General Reinforcement Learning Algorithm That Masters Chess, Shogi, and Go Through Self-Play”.
+            <em>Science</em>, 362(6419), 2018., str. 1140–1144.
+            <a href="https://doi.org/10.1126/science.aar6404" target="_blank" rel="noopener noreferrer">
+              DOI: 10.1126/science.aar6404
+            </a>;
+            <a href="https://discovery.ucl.ac.uk/id/eprint/10069050/" target="_blank" rel="noopener noreferrer">
+              Repozitorij UCL-a
+            </a>.
+          </li>
 
-    <li id="izvor-5">
-      Leela Chess Zero contributors.
-      <em>AlphaZero Primer.</em>
-      Tehnička dokumentacija projekta Leela Chess Zero.
-      <a href="https://lczero.org/dev/lc0/search/alphazero/">
-        Dostupno na službenoj stranici projekta
-      </a>.
-      <!-- Dodaj datum pristupa. -->
-    </li>
+          <li id="izvor-6">
+            Nasu, Y.
+            <em>Efficiently Updatable Neural-Network-based Evaluation Functions for Computer Shogi</em>.
+            Izvorna dokumentacija i implementacija NNUE arhitekture, 2018.
+            <a href="https://github.com/hoshizora-m/NNUE" target="_blank" rel="noopener noreferrer">
+              Izvorni repozitorij
+            </a>.
+          </li>
 
-    <li id="izvor-6">
-      De Man, R.
-      <em>Syzygy Tablebases.</em>
-      Izvorni kod i dokumentacija baza šahovskih završnica.
-      <a href="https://github.com/syzygy1/tb/blob/master/README.md">
-        Dokumentacija u službenom repozitoriju
-      </a>.
-      <!-- Dodaj datum pristupa. -->
-    </li>
+          <li id="izvor-7">
+            Stockfish contributors.
+            <em>NNUE — službena tehnička dokumentacija i implementacija unutar projekta Stockfish</em>.
+            <a href="https://official-stockfish.github.io/docs/nnue-pytorch-wiki/docs/nnue.html" target="_blank" rel="noopener noreferrer">
+              Dokumentacija NNUE-a
+            </a>;
+            <a href="https://github.com/official-stockfish/Stockfish" target="_blank" rel="noopener noreferrer">
+              Izvorni kod Stockfisha
+            </a>.
+          </li>
 
-    <li id="izvor-7">
-      Shannon, C. E.
-      „Programming a Computer for Playing Chess”.
-      <em>The London, Edinburgh, and Dublin Philosophical Magazine
-      and Journal of Science</em>, 41(314), 1950., str. 256–275.
-      <a href="https://doi.org/10.1080/14786445008521796">
-        DOI: 10.1080/14786445008521796
-      </a>.
-      <a href="https://www.computerhistory.org/chess/doc-431614f453dde/">
-        PDF u arhivu Computer History Museuma
-      </a>.
-    </li>
-  </ol>
-</section>
+          <li id="izvor-8">
+            Russell, S. i Norvig, P.
+            <em>Artificial Intelligence: A Modern Approach.</em>
+            4. izdanje, Pearson, 2021.
+            Poglavlje 5: „Adversarial Search and Games”.
+            <a href="https://aima.cs.berkeley.edu/" target="_blank" rel="noopener noreferrer">
+              Službena stranica knjige
+            </a>.
+          </li>
+        </ol>
+      </section>
+
       <section id="dodatak">
         <h2>Dodatak</h2>
-        <p class="placeholder">[Ovdje dodaj vlastite dijagrame, PGN datoteke, rezultate pokusa ili dodatne materijale. Ukloni odjeljak ako ga ne koristiš.]</p>
+        <p>
+          U repozitoriju projekta nalaze se primjeri generiranja i vizualizacije 
+          stabla igre u paketu NetworkX, kao i testni primjeri rezanja na šahovskim stablima male dubine.
+        </p>
       </section>
+
       <section id="ai">
         <h2>Uporaba umjetne inteligencije</h2>
-        <p>Za izradu predloška web stranice korišten je ChatGPT.</p>
+        <p>LLM je korišten za kopiranje predloška web-stranice od kolege Karla Pušelja. 
+          Također za crtanje grafova od ručno izrađenih funkcija minimax i alfa_beta_podrezivanje
+          i za uljepšavanje prezentacije
+        </p>
       </section>
     </article>
   </main>
